@@ -1,7 +1,5 @@
 import cv2
-import importlib
 import os
-import stat
 import youtube_dl
 import sys
 
@@ -58,7 +56,6 @@ def downloadAll(refreshAll=False):
     if not os.path.isdir(folder):
         os.makedirs(folder)
     for video in videos:
-        print(1)
         if not file_exists(video.get("filename")):
             download(video)
 
@@ -66,13 +63,21 @@ def imagefeed(cvfunction):
     print("here for now")
 
 def videofeed(cvfunction):
-    # for 
-    video = cv2.VideoCapture(folder+"/tets.gif")
+    play = False
+
+    for file in os.listdir(folder):
+        video = cv2.VideoCapture(folder+"/"+file)
     
-    while True:
-        success,frame = video.read()
-        image = cvfunction(frame)
-        cv2.imshow("Image", image)
-        cv2.waitKey(0)
+        while True:
+            success,frame = video.read()
+            if success:
+                image = cvfunction(frame)
+                cv2.imshow("Image", image)
+            else:
+                break
+            key = cv2.waitKey(60 if play else 0)
+            if key == ord(' '):
+                play = not play
+
 
 downloadAll()
