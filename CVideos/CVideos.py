@@ -27,14 +27,6 @@ videos = [
 ]
 folder = "CVideos"
 
-# go from video to video
-    # look through CVideos folder
-    # pass filename through 
-# scrubbing/video features
-    # play feature
-# include and exclude
-# image side by side
-
 def download(video):
     print("Downloading "+video.get("filename")+" from "+video.get("link")+" ... ", end="")
     save_stdout = sys.stdout
@@ -62,11 +54,13 @@ def downloadAll(refreshAll=False):
 def imagefeed(cvfunction):
     print("here for now")
 
-def videofeed(cvfunction):
+def videofeed(cvfunction, file=None):
     play = False
 
-    for file in os.listdir(folder):
-        video = cv2.VideoCapture(folder+"/"+file)
+    def feedfile(filename):
+        nonlocal play
+
+        video = cv2.VideoCapture(folder+"/"+filename)
     
         while True:
             success,frame = video.read()
@@ -74,10 +68,16 @@ def videofeed(cvfunction):
                 image = cvfunction(frame)
                 cv2.imshow("Image", image)
             else:
-                break
+                return
             key = cv2.waitKey(60 if play else 0)
             if key == ord(' '):
                 play = not play
+
+    if not file:
+        for filename in os.listdir(folder):
+            feedfile(filename)
+    else:
+        feedfile(file)
 
 
 downloadAll()
